@@ -16,7 +16,6 @@ ATheWeapon::ATheWeapon()
 
 	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
 	RootComponent = WeaponMesh;
-
 	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	WeaponMesh->SetRelativeRotation(FRotator(0.f, 90.f, 0.f));
 
@@ -48,6 +47,7 @@ void ATheWeapon::Tick(float DeltaTime)
 	{
 		float Distance = FVector::Dist(GetActorLocation(), ThrowStartLocation);
 
+		//spin weapon
 		AddActorLocalRotation(FRotator(4000.f * DeltaTime, 0.f, 0.f));
 
 		if (Distance > MaxThrowDistance)
