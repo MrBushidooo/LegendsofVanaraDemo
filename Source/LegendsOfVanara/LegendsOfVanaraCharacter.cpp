@@ -63,7 +63,7 @@ void ALegendsOfVanaraCharacter::BeginPlay()
 
 	if (GadaWeaponClass)
 	{
-		// Get socket transform FIRST
+	
 		FTransform SocketTransform = GetMesh()->GetSocketTransform(TEXT("Gada_Socket"));
 
 		FActorSpawnParameters Params;
