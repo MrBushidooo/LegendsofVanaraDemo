@@ -2,6 +2,7 @@
 
 Contains the gameplay code for a throwable weapon system developed in Unreal Engine.
 Demo Video - https://youtu.be/C4jqIEb3IbA?si=XvAKY3tTIT2iWpLL
+PlayBuild - https://drive.google.com/drive/folders/1qmwsgjhDUZwCrypN1HmktuoJBbDTAz7c?usp=sharing
 
 ## Features
 
