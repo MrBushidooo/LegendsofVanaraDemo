@@ -14,30 +14,11 @@ ATheWeapon::ATheWeapon()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	// Capsule as ROOT again
-	//CollisionCapsule = CreateDefaultSubobject<UCapsuleComponent>("CollisionCapsule");
-
-	/*RootComponent = CollisionCapsule;
-
-	CollisionCapsule->InitCapsuleSize(20.f, 60.f);
-	CollisionCapsule->SetRelativeRotation(FRotator(0.f, 0.f, 90.f));
-	CollisionCapsule->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	CollisionCapsule->SetCollisionProfileName(TEXT("BlockAll"));
-	CollisionCapsule->SetGenerateOverlapEvents(false);
-	CollisionCapsule->SetNotifyRigidBodyCollision(true);*/
-
-	//SpinPivot = CreateDefaultSubobject<USceneComponent>("SpinPivot");
-	//RootComponent = SpinPivot;
-
-
 	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
-	//WeaponMesh->SetupAttachment(SpinPivot);
 	RootComponent = WeaponMesh;
 
-	//WeaponMesh->SetupAttachment(RootComponent);
 	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	WeaponMesh->SetRelativeRotation(FRotator(0.f, 90.f, 0.f)); // adjust axis
-	//WeaponMesh->SetRelativeLocation(FVector(0.f, 0.f, 50.f));
+	WeaponMesh->SetRelativeRotation(FRotator(0.f, 90.f, 0.f));
 
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>("Projectile");
 	ProjectileMovement->UpdatedComponent = WeaponMesh;
@@ -48,17 +29,12 @@ ATheWeapon::ATheWeapon()
 	ProjectileMovement->bRotationFollowsVelocity = true;
 
 	ReturnSpline = CreateDefaultSubobject<USplineComponent>("Spline");
-
-	//WeaponMesh->OnComponentHit.AddDynamic(this, &ATheWeapon::OnHit);
-
 }
 
 // Called when the game starts or when spawned
 void ATheWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	//CollisionCapsule->OnComponentHit.AddDynamic(this, &ATheWeapon::OnHit);
 
 }
 
@@ -67,6 +43,7 @@ void ATheWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//Flying state
 	if (WeaponState == EWeaponState::Flying)
 	{
 		float Distance = FVector::Dist(GetActorLocation(), ThrowStartLocation);
@@ -79,23 +56,7 @@ void ATheWeapon::Tick(float DeltaTime)
 		}
 	}
 
-	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Red,
-		FString::Printf(TEXT("Weapon Location: %s"), *GetActorLocation().ToString()));
-
-	/*DrawDebugCapsule(
-		GetWorld(),
-		GetActorLocation(),  // use actor location, not component
-		40.f, 10.f,
-		FQuat::Identity,
-		FColor::Red, false, -1.f, 0, 3.f
-	);*/
-
-	if (WeaponState != EWeaponState::InHand)
-	{
-		//AddActorLocalRotation(FRotator(0, 0,2000 * DeltaTime));
-		//AddActorWorldRotation(FRotator(0, 0,1000 * DeltaTime));
-	}
-
+	//Returning state
 	if (WeaponState == EWeaponState::Returning)
 	{
 		ACharacter* OwnerCharacter = Cast<ACharacter>(GetOwner());
@@ -103,7 +64,7 @@ void ATheWeapon::Tick(float DeltaTime)
 		{
 			FVector HandLocation = OwnerCharacter->GetMesh()->GetSocketLocation(TEXT("Gada_Socket"));
 
-			// Update the END point of the spline
+			//updating the spline end point in tick 
 			ReturnSpline->SetLocationAtSplinePoint(
 				2,
 				HandLocation,
@@ -126,15 +87,6 @@ void ATheWeapon::Tick(float DeltaTime)
 
 		// spin weapon
 		AddActorLocalRotation(FRotator(4000.f * DeltaTime, 0.f,  0.f));
-		//SpinPivot->AddLocalRotation(FRotator(1500.f * DeltaTime, 0.f, 0.f ));
-
-		// -------- spin around center (offset trick) --------
-		/*FVector CenterOffset = FVector(0.f, 0.f, 100.f); // adjust based on mesh
-
-		WeaponMesh->AddLocalOffset(CenterOffset);
-		WeaponMesh->AddLocalRotation(FRotator(2000.f * DeltaTime, 0.f, 0.f));
-		WeaponMesh->AddLocalOffset(-CenterOffset);*///////////
-		// ---------------------------------------------------
 
 		if (RecallAlpha >= 1.f)
 		{
@@ -148,29 +100,19 @@ void ATheWeapon::ThrowWeapon(const FVector& Direction)
 {
 	if (WeaponState != EWeaponState::InHand)
 		return;
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("TheWeapon::ThrowWeapon()"));
 
 	WeaponState = EWeaponState::Flying;
 
 	BP_StartTrailVFX();
 	BP_PlayFlyingSound();
 
-	// store start location
 	ThrowStartLocation = GetActorLocation();
-
-	// enable collision on capsule (this handles hits now)
-	//CollisionCapsule->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	//CollisionCapsule->SetCollisionProfileName(TEXT("BlockAllDynamic"));
-	//CollisionCapsule->IgnoreActorWhenMoving(GetOwner(), true);
 
 	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	
-	//ProjectileMovement->UpdatedComponent = CollisionCapsule;
 	ProjectileMovement->bShouldBounce = false;
 	ProjectileMovement->bSweepCollision = true;
-	//ProjectileMovement->bRotationFollowsVelocity = true;
 	ProjectileMovement->Velocity = Direction.GetSafeNormal() * ProjectileMovement->InitialSpeed;
-	//ProjectileMovement->Velocity = Direction * 1000.f;
 	ProjectileMovement->Activate();
 }
 
@@ -227,7 +169,7 @@ void ATheWeapon::GenerateReturnSpline()
 	if (!OwnerCharacter)
 		return;
 
-	// get hand socket location instead of actor origin
+	//get hand socket location
 	FVector End = OwnerCharacter->GetMesh()->GetSocketLocation(TEXT("Gada_Socket"));
 
 	FVector Mid = (Start + End) * 0.5f;
@@ -240,23 +182,3 @@ void ATheWeapon::GenerateReturnSpline()
 
 	ReturnSpline->UpdateSpline();
 }
-
-/*void ATheWeapon::OnHit(UPrimitiveComponent* HitComponent,
-	AActor* OtherActor,
-	UPrimitiveComponent* OtherComp,
-	FVector NormalImpulse,
-	const FHitResult& Hit)
-{
-	if (WeaponState != EWeaponState::Flying)
-		return;
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("TheWeapon::OnHit()"));
-
-	if (OtherActor && OtherActor != GetOwner())
-	{
-		OtherActor->Destroy();
-	}
-
-	RecallWeapon();
-}*/
-
