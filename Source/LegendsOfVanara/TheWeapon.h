@@ -36,18 +36,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+    //Properties
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* WeaponMesh;
-
-	// new pivot component
-	//UPROPERTY(VisibleAnywhere)
-	//USceneComponent* SpinPivot;
-
-	//UPROPERTY(VisibleAnywhere)
-	//USceneComponent* RootScene;
-
-	//UPROPERTY(VisibleAnywhere)
-	//UCapsuleComponent* CollisionCapsule;
 
 	UPROPERTY(VisibleAnywhere)
 	UProjectileMovementComponent* ProjectileMovement;
