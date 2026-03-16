@@ -49,9 +49,6 @@ class ALegendsOfVanaraCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* ThrowWeaponAction;
 
-	//Recall Weapon Input Action
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputAction* RecallWeaponAction;
 
 public:
 	ALegendsOfVanaraCharacter();
@@ -97,7 +94,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool isAttacking = false;
 
-	//FVector ThrowDirection;
 	UFUNCTION(BlueprintImplementableEvent)
 	void BP_PlayCatchAnimation();
 
