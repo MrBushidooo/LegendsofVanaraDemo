@@ -16,7 +16,7 @@ Demo Video - https://youtu.be/C4jqIEb3IbA?si=XvAKY3tTIT2iWpLL
 ## Technical Highlights
 
 - Implemented using **Unreal Engine C++**
-- Uses `UProjectileMovementComponent` for throw mechanics
-- Uses `USplineComponent` to generate a dynamic recall trajectory
+- Uses UProjectileMovementComponent for throw mechanics
+- Uses USplineComponent to generate a dynamic recall trajectory
 
 
