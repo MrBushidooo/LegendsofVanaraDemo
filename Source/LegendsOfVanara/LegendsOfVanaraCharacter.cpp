@@ -61,6 +61,7 @@ void ALegendsOfVanaraCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//spawn the weapon
 	if (GadaWeaponClass)
 	{
 	
